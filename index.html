@@ -67,7 +67,6 @@
       font-size: 16px; background: var(--card-bg); transition: all 0.2s ease; outline: none;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    input:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
     
     .date-time-group { display: flex; gap: 10px; align-items: center; }
     .date-time-group input[type="text"], .date-time-group input[type="time"] { flex: 1; text-align: center; direction: ltr; letter-spacing: 1px; }
@@ -87,50 +86,27 @@
     button:disabled { background: #94a3b8; cursor: not-allowed; }
     
     .btn-add-emp { background: var(--success); }
-    .btn-export { background: #059669; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .btn-delete, .btn-edit, .btn-close { width: auto; padding: 6px 12px; font-size: 0.8rem; margin-top: 0; border-radius: 8px; }
-    .btn-delete { background: #fee2e2; color: var(--danger); }
+    .btn-delete { width: auto; padding: 6px 12px; font-size: 0.8rem; margin-top: 0; border-radius: 8px; background: #fee2e2; color: var(--danger); }
     .btn-delete:hover { background: var(--danger); color: white; }
-    .btn-edit { background: #fef3c7; color: var(--warning); margin-left: 5px; }
-    .btn-edit:hover { background: var(--warning); color: white; }
     
     .hidden { display: none !important; }
     .status { margin-top: 12px; font-size: 0.95rem; text-align: center; font-weight: bold; }
     
-    .card, .emp-item, .leave-summary-card { 
+    .card, .emp-item { 
       background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; 
       border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-    .emp-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; flex-wrap: wrap; gap: 10px; }
-    .emp-info { flex: 1; min-width: 150px; }
-    .emp-actions { display: flex; gap: 4px; }
-    
-    .record-type-badge {
-      display: inline-block; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: white; margin-right: 8px;
-    }
-    .badge-blue { background: var(--primary); }
-    .badge-green { background: var(--success); }
-    .badge-orange { background: var(--warning); }
-    .badge-black { background: var(--black-accent); }
-    .badge-red { background: var(--danger); }
-    .badge-purple { background: #8b5cf6; }
+    .emp-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
+    .emp-info { flex: 1; }
 
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; font-size: 0.85rem; }
-    .detail-item { padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.6; }
-    .detail-item small { display: block; color: var(--text-muted); font-size: 0.75rem; }
-
-    /* تقویم ماهیانه */
+    /* تقویم شمسی زیبا */
     .calendar-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .calendar-header-title { text-align: center; font-weight: bold; font-size: 1rem; color: var(--primary); margin-bottom: 12px; }
+    .calendar-header-title { text-align: center; font-weight: bold; font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
     .calendar-day-name { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); padding-bottom: 6px; }
-    .calendar-cell { font-size: 0.85rem; padding: 8px 0; border-radius: 6px; background: #f8fafc; color: var(--text-main); font-weight: 500; }
+    .calendar-cell { font-size: 0.85rem; padding: 10px 0; border-radius: 6px; background: #f8fafc; color: var(--text-main); font-weight: 500; }
     .calendar-cell.empty { background: transparent; }
     .calendar-cell.today { background: var(--primary); color: white; font-weight: bold; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
-
-    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-    .modal-content { background: var(--card-bg); padding: 25px; border-radius: 16px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; 
@@ -153,14 +129,8 @@
   <div id="loginSection">
     <h2>🔐 ورود سیستم</h2>
     <form id="loginForm">
-      <div class="form-group"><label>نام کاربری:</label><input type="text" id="loginUsername" required placeholder="مثال: amin.se7en92@gmail.com" autocomplete="username" autocapitalize="none"></div>
+      <div class="form-group"><label>ایمیل:</label><input type="email" id="loginUsername" required placeholder="amin.se7en92@gmail.com" autocomplete="username"></div>
       <div class="form-group"><label>کلمه عبور:</label><input type="password" id="loginPassword" required placeholder="کلمه عبور"></div>
-      
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
-        <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--primary);">
-        <label for="rememberMe" style="margin: 0; font-size: 0.85rem; font-weight: normal; cursor: pointer; color: var(--text-muted);">مرا به خاطر بسپار</label>
-      </div>
-
       <button type="submit">ورود به پنل</button>
     </form>
     <div id="loginStatus" class="status"></div>
@@ -192,22 +162,24 @@
       </div>
 
       <div class="user-welcome-card">
-        <span>👤 کاربر وارد شده: <strong id="currentLoggedInUser" style="color:var(--primary);">...</strong></span>
+        <span>👤 کاربر: <strong id="currentLoggedInUser" style="color:var(--primary);">...</strong></span>
         <button type="button" onclick="handleLogout()" style="margin:0; width:auto; padding:6px 12px; font-size:0.75rem; background:#fee2e2; color:var(--danger); border-radius:6px;">خروج</button>
       </div>
 
-      <h3 style="text-align: right; font-size: 1rem; margin-top: 20px;">خلاصه وضعیت سیستم</h3>
-      <div class="detail-grid" id="dashboardStats"><div style="text-align: center; padding: 20px; color: var(--text-muted); grid-column: span 2;">در حال بارگذاری...</div></div>
+      <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1rem; margin-bottom: 10px;">📊 وضعیت پایگاه داده</h3>
+        <p id="dbStatusText" style="color: var(--text-muted); font-size: 0.9rem;">در حال بررسی پرسنل...</p>
+      </div>
     </div>
     
     <!-- تب ثبت مرخصی -->
     <div id="tabLeave" class="tab-content hidden">
-      <div class="card" style="box-shadow: none; border:none; background: transparent;">
+      <div class="card">
         <h2>📝 ثبت مرخصی جدید</h2>
         <form id="leaveForm">
           <div class="form-group">
             <label>👤 انتخاب فرد:</label>
-            <input type="text" class="search-input" placeholder="جستجوی نام یا شماره پرسنلی..." oninput="filterLeaveSelect(this.value)" style="margin-bottom: 8px;">
+            <input type="text" class="search-input" placeholder="جستجوی نام..." oninput="filterLeaveSelect(this.value)" style="margin-bottom: 8px;">
             <select id="employeeSelect" required>
               <option value="">در حال دریافت...</option>
             </select>
@@ -219,7 +191,7 @@
               <option value="sick_leave">استعلاجی</option>
               <option value="official_holiday">تعطیل رسمی</option>
               <option value="absence">غیبت</option>
-              <option value="other">سایر (بدون کسر از سهمیه)</option>
+              <option value="other">سایر</option>
             </select>
           </div>
           
@@ -239,7 +211,7 @@
             </div>
           </div>
           
-          <div class="form-group"><label>💬 توضیحات (علت):</label><textarea id="note" rows="2" placeholder="توضیحات اختیاری..."></textarea></div>
+          <div class="form-group"><label>💬 توضیحات:</label><textarea id="note" rows="2" placeholder="توضیحات اختیاری..."></textarea></div>
           <button type="submit" id="submitLeaveBtn">ثبت نهایی مرخصی</button>
         </form>
         <div id="leaveStatus" class="status"></div>
@@ -249,21 +221,19 @@
     <!-- تب وضعیت ماهانه -->
     <div id="tabMonthlyStatus" class="tab-content hidden">
       <h2>📅 وضعیت ماهانه</h2>
-      <input type="text" class="search-input" placeholder="جستجوی نام پرسنل..." oninput="filterDOM('monthlyStatusList', this.value)">
-      <div id="monthlyStatusList">در حال دریافت...</div>
+      <div id="monthlyStatusList" style="text-align: center; color: var(--text-muted); padding: 20px;">به زودی...</div>
     </div>
 
     <!-- تب سوابق -->
     <div id="tabRecords" class="tab-content hidden">
       <h2>📋 سوابق ثبت‌شده</h2>
-      <input type="text" class="search-input" placeholder="جستجوی نام، شماره پرسنلی یا تاریخ..." oninput="filterRecords(this.value)">
-      <div id="recordsList">در حال دریافت...</div>
+      <div id="recordsList" style="text-align: center; color: var(--text-muted); padding: 20px;">رکوردی ثبت نشده است.</div>
     </div>
 
     <!-- تب پرسنل -->
     <div id="tabEmployees" class="tab-content hidden">
       <h2>👥 مدیریت پرسنل</h2>
-      <button type="button" id="toggleAddEmpBtn" onclick="toggleAddEmployeeForm()" style="background: var(--success); margin-bottom: 15px;">➕ افزودن پرسنل جدید</button>
+      <button type="button" onclick="toggleAddEmployeeForm()" style="background: var(--success); margin-bottom: 15px;">➕ افزودن پرسنل جدید</button>
 
       <div class="card hidden" id="addEmployeeCard">
         <form id="addEmployeeForm">
@@ -274,15 +244,14 @@
         <div id="empStatus" class="status"></div>
       </div>
 
-      <input type="text" class="search-input" placeholder="جستجوی پرسنل..." oninput="filterDOM('employeesManageList', this.value)">
+      <input type="text" class="search-input" placeholder="جستجوی پرسنل..." oninput="filterDOM(this.value)">
       <div id="employeesManageList">در حال دریافت...</div>
     </div>
 
     <!-- تب گزارش -->
     <div id="tabRemaining" class="tab-content hidden">
-      <h2>📊 گزارش باقی‌مانده و اکسل</h2>
-      <input type="text" id="searchInputRemaining" class="search-input" placeholder="جستجوی نام شخص..." oninput="filterRemaining(this.value)">
-      <div id="remainingList"></div>
+      <h2>📊 گزارش باقی‌مانده</h2>
+      <div style="text-align: center; color: var(--text-muted); padding: 20px;">گزارش آماده است.</div>
     </div>
 
   </div>
@@ -302,20 +271,13 @@
   const SUPABASE_ANON_KEY = "sb_publishable_54PZ3Qy6bND_cQEla_5bpg_nQK16NWw";
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const reverseUserMapping = {
-    'amin.saeed@simorgh.local': 'امین سعید',
-    'amin.se7en92@gmail.com': 'امین سعید',
-    'm.gishinzadeh@simorgh.local': 'محمد گیشین زاده',
-    'mehrdad@simorgh.local': 'مهرداد شادمان',
-    'borhani@simorgh.local': 'برهانی'
-  };
-
   function toEnglishDigits(str) {
     if (!str) return '';
     return String(str).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 1776).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632);
   }
 
   function gregorianToShamsi(gy, gm, gd) {
+    let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
     let jy = (gy <= 1600) ? 0 : 979;
     gy -= (gy <= 1600) ? 621 : 1600;
     let gy2 = (gm > 2) ? (gy + 1) : gy;
@@ -366,11 +328,6 @@
     } catch (e) { return null; }
   }
 
-  function getPersianName(val) {
-    if (!val) return 'سیستم';
-    return reverseUserMapping[val] || val;
-  }
-
   function updateTehranClockAndCalendar() {
     try {
       const now = new Date();
@@ -385,6 +342,33 @@
       
       const titleEl = document.getElementById('calendarMonthTitle');
       if (titleEl) titleEl.innerText = `${monthNames[parseInt(shamsi.month)-1]} ${shamsi.year}`;
+
+      const gridEl = document.getElementById('calendarDaysGrid');
+      if (gridEl) {
+        let jMonth = parseInt(shamsi.month);
+        let jYear = parseInt(shamsi.year);
+        let daysInMonth = 31;
+        if (jMonth > 6 && jMonth < 12) daysInMonth = 30;
+        if (jMonth === 12) {
+          const isLeap = ((jYear % 33) % 4 === 1);
+          daysInMonth = isLeap ? 30 : 29;
+        }
+
+        const firstDayGregorian = shamsiToGregorian(jYear, jMonth, 1);
+        const firstDayObj = new Date(firstDayGregorian.gy, firstDayGregorian.gm - 1, firstDayGregorian.gd);
+        let jsDay = firstDayObj.getDay();
+        let startDayIndex = (jsDay + 1) % 7;
+
+        let html = '';
+        for (let i = 0; i < startDayIndex; i++) {
+          html += `<div class="calendar-cell empty"></div>`;
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+          let isToday = (day === parseInt(shamsi.day));
+          html += `<div class="calendar-cell ${isToday ? 'today' : ''}">${day}</div>`;
+        }
+        gridEl.innerHTML = html;
+      }
     } catch(e) {}
   }
   setInterval(updateTehranClockAndCalendar, 1000);
@@ -431,12 +415,9 @@
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
         document.getElementById('tabBar').classList.remove('hidden');
-        document.getElementById('currentLoggedInUser').innerText = getPersianName(session.user.email);
+        document.getElementById('currentLoggedInUser').innerText = session.user.email;
 
         await loadEmployeesList();
-        await loadDashboard();
-        await loadMonthlyStatus();
-        await loadRecords();
       } else {
         document.getElementById('loginSection').classList.remove('hidden');
         document.getElementById('appSection').classList.add('hidden');
@@ -472,8 +453,13 @@
           return `<div class="emp-item" data-name="${e.full_name} ${e.personnel_code || ''}"><div class="emp-info"><strong>${e.full_name}</strong><small style="color:var(--text-muted); display:block;">${codeText}</small></div><button class="btn-delete" onclick="deleteEmployee('${e.id}', '${e.full_name}')">حذف</button></div>`;
         }).join('');
       } else {
-        manageList.innerHTML = `<p style="text-align:center; color:var(--text-muted);">پرسنلی ثبت نشده است.</p>`;
+        manageList.innerHTML = `<p style="text-align:center; color:var(--text-muted);">پرسنلی ثبت نشده است. از دکمه بالا برای افزودن استفاده کنید.</p>`;
       }
+    }
+
+    const dbStatus = document.getElementById('dbStatusText');
+    if(dbStatus) {
+      dbStatus.innerText = `تعداد کل پرسنل ثبت‌شده در دیتابیس مزرعه ۲: ${allEmployeesData.length} نفر`;
     }
   }
 
@@ -500,29 +486,11 @@
   });
 
   async function deleteEmployee(id, name) {
-    if (confirm(`حذف ${name} و سوابق مرخصی او؟`)) {
-      await client.from('leave_records').delete().eq('employee_id', id);
+    if (confirm(`حذف ${name} از لیست پرسنل؟`)) {
       await client.from('employees').delete().eq('id', id);
       loadEmployeesList();
     }
   }
-
-  async function loadDashboard() {
-    const statsEl = document.getElementById('dashboardStats');
-    if(statsEl) statsEl.innerHTML = `<div class="detail-item">تعداد کل پرسنل: <strong>${allEmployeesData.length} نفر</strong></div><div class="detail-item">وضعیت سیستم: <strong>آماده به کار</strong></div>`;
-  }
-
-  async function loadMonthlyStatus() {
-    const list = document.getElementById('monthlyStatusList');
-    if(list) list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">سیستم آماده ثبت و نمایش سوابق است.</p>`;
-  }
-
-  async function loadRecords() {
-    const list = document.getElementById('recordsList');
-    if(list) list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">سوابقی ثبت نشده است.</p>`;
-  }
-
-  async function loadRemainingLeave() {}
 
   document.getElementById('leaveForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -592,17 +560,14 @@
     }).join('');
   }
 
-  function filterDOM(containerId, query) {
+  function filterDOM(query) {
     const filter = query.trim().toLowerCase();
-    const items = document.getElementById(containerId).querySelectorAll('.emp-item');
+    const items = document.querySelectorAll('#employeesManageList .emp-item');
     items.forEach(item => {
       const name = item.getAttribute('data-name').toLowerCase();
       item.style.display = name.includes(filter) ? "" : "none";
     });
   }
-
-  function filterRecords(query) {}
-  function filterRemaining(query) {}
 
   init();
 </script>
