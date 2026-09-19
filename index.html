@@ -67,6 +67,7 @@
       font-size: 16px; background: var(--card-bg); transition: all 0.2s ease; outline: none;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    input:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
     
     .date-time-group { display: flex; gap: 10px; align-items: center; }
     .date-time-group input[type="text"], .date-time-group input[type="time"] { flex: 1; text-align: center; direction: ltr; letter-spacing: 1px; }
@@ -185,7 +186,7 @@
             </select>
           </div>
           <div class="form-group"><label>📌 نوع مرخصی:</label>
-            <select id="recordType">
+            <select id="recordType" onchange="handleRecordTypeChange()">
               <option value="daily_leave">مرخصی روزانه</option>
               <option value="hourly_leave">مرخصی ساعتی</option>
               <option value="sick_leave">استعلاجی</option>
@@ -198,17 +199,18 @@
           <div class="form-group">
             <label>⏳ تاریخ شروع:</label>
             <div class="date-time-group">
-              <input type="text" id="startDateManual" required placeholder="1405/06/12" autocomplete="off" inputmode="numeric" maxlength="10">
-              <input type="time" id="startTimeManual" value="07:00" required>
+              <input type="text" id="startDateManual" required placeholder="1405/06/19" autocomplete="off" inputmode="numeric" maxlength="10">
+              <input type="time" id="startTimeManual" value="07:00" required disabled>
             </div>
           </div>
           
           <div class="form-group">
             <label>⌛️ تاریخ پایان:</label>
             <div class="date-time-group">
-              <input type="text" id="endDateManual" placeholder="1405/06/12" autocomplete="off" inputmode="numeric" maxlength="10">
-              <input type="time" id="endTimeManual" value="14:20" required>
+              <input type="text" id="endDateManual" placeholder="1405/06/19" autocomplete="off" inputmode="numeric" maxlength="10">
+              <input type="time" id="endTimeManual" value="14:30" required disabled>
             </div>
+            <small id="timeHelpText" style="color:var(--text-muted); display:block; margin-top:4px;">برای این نوع مرخصی، ساعت به طور پیش‌فرض معادل ۷ ساعت و ۳۰ دقیقه (۰۷:۰۰ الی ۱۴:۳۰) محاسبه می‌شود.</small>
           </div>
           
           <div class="form-group"><label>💬 توضیحات:</label><textarea id="note" rows="2" placeholder="توضیحات اختیاری..."></textarea></div>
@@ -368,22 +370,44 @@
     return String(str).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 1776).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632);
   }
 
-  function parseManualInputToDate(dateId, timeId) {
-    try {
-      const dateVal = toEnglishDigits(document.getElementById(dateId).value).trim();
-      const timeVal = toEnglishDigits(document.getElementById(timeId).value).trim() || "07:00";
-      const parts = dateVal.split('/');
-      if (parts.length !== 3) return null;
-      const jy = parseInt(parts[0]), jm = parseInt(parts[1]), jd = parseInt(parts[2]);
-      
-      // conversion accurate via Intl / temporal or standard approximation
-      // let's use standard formula to gregorian
-      let gy = jy + 621;
-      // For simplicity in input parsing or standard shamsi to gregorian:
-      let g = shamsiToGregorian(jy, jm, jd);
-      const timeParts = timeVal.split(':');
-      return new Date(g.gy, g.gm - 1, g.gd, parseInt(timeParts[0]) || 0, parseInt(timeParts[1]) || 0, 0);
-    } catch (e) { return null; }
+  // فرمت خودکار تاریخ با اسلش هنگام تایپ
+  ['startDateManual', 'endDateManual'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) {
+      el.addEventListener('input', function(e) {
+        let v = toEnglishDigits(e.target.value).replace(/\D/g, '');
+        if (v.length > 8) v = v.substring(0, 8);
+        let formatted = '';
+        if (v.length > 4) {
+          formatted = v.substring(0, 4) + '/' + v.substring(4, 6);
+          if (v.length > 6) formatted += '/' + v.substring(6, 8);
+        } else {
+          formatted = v;
+        }
+        e.target.value = formatted;
+      });
+    }
+  });
+
+  function handleRecordTypeChange() {
+    const type = document.getElementById('recordType').value;
+    const startTimeInput = document.getElementById('startTimeManual');
+    const endTimeInput = document.getElementById('endTimeManual');
+    const helpText = document.getElementById('timeHelpText');
+
+    if (type === 'hourly_leave') {
+      startTimeInput.disabled = false;
+      endTimeInput.disabled = false;
+      startTimeInput.value = "07:00";
+      endTimeInput.value = "14:30";
+      if (helpText) helpText.innerText = "برای مرخصی ساعتی، ساعت شروع و پایان را به دقت وارد کنید.";
+    } else {
+      startTimeInput.disabled = true;
+      endTimeInput.disabled = true;
+      startTimeInput.value = "07:00";
+      endTimeInput.value = "14:30";
+      if (helpText) helpText.innerText = "برای این نوع مرخصی، ساعت به طور پیش‌فرض معادل ۷ ساعت و ۳۰ دقیقه (۰۷:۰۰ الی ۱۴:۳۰) تنظیم می‌شود.";
+    }
   }
 
   function shamsiToGregorian(jy, jm, jd) {
@@ -409,6 +433,18 @@
     return { gy: gy, gm: gm, gd: gd };
   }
 
+  function parseManualInputToDate(dateId, timeId) {
+    try {
+      const dateVal = toEnglishDigits(document.getElementById(dateId).value).trim();
+      const timeVal = toEnglishDigits(document.getElementById(timeId).value).trim() || "07:00";
+      const parts = dateVal.split('/');
+      if (parts.length !== 3) return null;
+      const g = shamsiToGregorian(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+      const timeParts = timeVal.split(':');
+      return new Date(g.gy, g.gm - 1, g.gd, parseInt(timeParts[0]) || 0, parseInt(timeParts[1]) || 0, 0);
+    } catch (e) { return null; }
+  }
+
   function updateTehranClockAndCalendar() {
     try {
       const now = new Date();
@@ -416,13 +452,7 @@
       const clockEl = document.getElementById('liveClock');
       if (clockEl) clockEl.innerText = timeStr;
 
-      // Accurate current Jalali date using Intl
-      const persianFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', {
-        timeZone: 'Asia/Tehran',
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric'
-      });
+      const persianFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', { timeZone: 'Asia/Tehran', year: 'numeric', month: 'numeric', day: 'numeric' });
       const parts = persianFormatter.formatToParts(now);
       let jYear = 1405, jMonth = 6, jDay = 1;
       parts.forEach(p => {
@@ -444,26 +474,20 @@
           daysInMonth = isLeap ? 30 : 29;
         }
 
-        // Find starting weekday of month 1
         const firstDayGregorian = shamsiToGregorian(jYear, jMonth, 1);
         const firstDayObj = new Date(firstDayGregorian.gy, firstDayGregorian.gm - 1, firstDayGregorian.gd);
-        let jsDay = firstDayObj.getDay(); // 0 is Sunday
-        // Saturday = 0 in Iran calendar grid
+        let jsDay = firstDayObj.getDay();
         let startDayIndex = (jsDay + 1) % 7;
 
         let html = '';
-        for (let i = 0; i < startDayIndex; i++) {
-          html += `<div class="calendar-cell empty"></div>`;
-        }
+        for (let i = 0; i < startDayIndex; i++) html += `<div class="calendar-cell empty"></div>`;
         for (let day = 1; day <= daysInMonth; day++) {
           let isToday = (day === jDay);
           html += `<div class="calendar-cell ${isToday ? 'today' : ''}">${day}</div>`;
         }
         gridEl.innerHTML = html;
       }
-    } catch(e) {
-      console.error("Calendar error:", e);
-    }
+    } catch(e) {}
   }
   setInterval(updateTehranClockAndCalendar, 1000);
 
@@ -512,6 +536,7 @@
         document.getElementById('currentLoggedInUser').innerText = session.user.email;
 
         updateTehranClockAndCalendar();
+        handleRecordTypeChange();
         await loadEmployeesList();
       } else {
         document.getElementById('loginSection').classList.remove('hidden');
@@ -526,24 +551,15 @@
 
   async function loadEmployeesList() {
     const { data, error } = await client.from('employees').select('*');
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) { console.error(error); return; }
     allEmployeesData = data || [];
 
-    // اگر پرسنلی ثبت نشده بود، هر 89 نفر از فایل اکسل را به صورت خودکار در دیتابیس ثبت کن
     if (allEmployeesData.length === 0) {
       const dbStatus = document.getElementById('dbStatusText');
-      if(dbStatus) dbStatus.innerText = "در حال انتقال و ثبت ۸۹ نفر پرسنل از فایل اکسل در دیتابیس...";
-      
-      const { data: insertedData, error: insertError } = await client.from('employees').insert(initialEmployeesData).select();
-      if (!insertError && insertedData) {
-        allEmployeesData = insertedData;
-      } else {
-        // Fallback if bulk insert has issues
-        allEmployeesData = initialEmployeesData;
-      }
+      if(dbStatus) dbStatus.innerText = "در حال ثبت ۸۹ نفر پرسنل در دیتابیس...";
+      const { data: insertedData } = await client.from('employees').insert(initialEmployeesData).select();
+      if (insertedData) allEmployeesData = insertedData;
+      else allEmployeesData = initialEmployeesData;
     }
     
     const select = document.getElementById('employeeSelect');
@@ -563,40 +579,7 @@
     }
 
     const dbStatus = document.getElementById('dbStatusText');
-    if(dbStatus) {
-      dbStatus.innerText = `تعداد کل پرسنل ثبت‌شده در دیتابیس مزرعه ۲: ${allEmployeesData.length} نفر`;
-    }
-  }
-
-  document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const status = document.getElementById('empStatus');
-    let pCode = toEnglishDigits(document.getElementById('empPersonnelCode').value).trim();
-    if (pCode === "") pCode = null;
-    const fullName = document.getElementById('empFullName').value.trim();
-
-    status.style.color = "var(--primary)";
-    status.innerText = "در حال ذخیره...";
-
-    const { error } = await client.from('employees').insert([{ personnel_code: pCode, full_name: fullName }]);
-    if (!error) {
-      status.style.color = "var(--success)";
-      status.innerText = "با موفقیت ثبت شد!";
-      document.getElementById('addEmployeeForm').reset();
-      loadEmployeesList();
-    } else {
-      status.style.color = "var(--danger)";
-      status.innerText = "خطا: " + error.message;
-    }
-  });
-
-  async function deleteEmployee(id, name) {
-    if (confirm(`حذف ${name} از لیست پرسنل؟`)) {
-      if (id) {
-        await client.from('employees').delete().eq('id', id);
-      }
-      loadEmployeesList();
-    }
+    if(dbStatus) dbStatus.innerText = `تعداد کل پرسنل ثبت‌شده در دیتابیس مزرعه ۲: ${allEmployeesData.length} نفر`;
   }
 
   document.getElementById('leaveForm').addEventListener('submit', async (e) => {
@@ -615,8 +598,20 @@
       document.getElementById('endDateManual').value = document.getElementById('startDateManual').value;
     }
 
+    const startTimeInput = document.getElementById('startTimeManual');
+    const endTimeInput = document.getElementById('endTimeManual');
+    const wasDisabled = startTimeInput.disabled;
+    
+    startTimeInput.disabled = false;
+    endTimeInput.disabled = false;
+
     const startObj = parseManualInputToDate('startDateManual', 'startTimeManual');
     const endObj = parseManualInputToDate('endDateManual', 'endTimeManual');
+
+    if (wasDisabled) {
+      startTimeInput.disabled = true;
+      endTimeInput.disabled = true;
+    }
 
     if (!startObj || !endObj) {
       status.style.color = "var(--danger)";
@@ -643,6 +638,7 @@
       status.style.color = "var(--success)";
       status.innerText = "مرخصی با موفقیت ثبت شد!";
       document.getElementById('leaveForm').reset();
+      handleRecordTypeChange();
     } else {
       status.style.color = "var(--danger)";
       status.innerText = "خطا در ثبت: " + error.message;
