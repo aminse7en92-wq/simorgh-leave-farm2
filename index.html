@@ -273,6 +273,97 @@
   const SUPABASE_ANON_KEY = "sb_publishable_54PZ3Qy6bND_cQEla_5bpg_nQK16NWw";
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  const initialEmployeesData = [
+    { full_name: 'محمدرضا احمدپور سعید آبادی', personnel_code: '502048' },
+    { full_name: 'بهنام ادهمى', personnel_code: '599121' },
+    { full_name: 'علیرضا اکبرزاده - جعفر', personnel_code: '500133' },
+    { full_name: 'علیرضا اکبرزاده نگاری - علی', personnel_code: '504048' },
+    { full_name: 'امین امین زاده', personnel_code: '598110' },
+    { full_name: 'حسام الدین برهانی', personnel_code: '598127' },
+    { full_name: 'میلاد بهرام پور', personnel_code: '504036' },
+    { full_name: 'علی بهزاد پور', personnel_code: '593105' },
+    { full_name: 'مسعود پور احمدی', personnel_code: '593208' },
+    { full_name: 'بهزاد پور احمدی', personnel_code: '593101' },
+    { full_name: 'مرتضی پور احمدی', personnel_code: '598102' },
+    { full_name: 'محمد مهدی پوراحمدی', personnel_code: '504047' },
+    { full_name: 'محمد پورجلالی', personnel_code: '504030' },
+    { full_name: 'دانیال تاختی', personnel_code: '504052' },
+    { full_name: 'علیرضا جهان آبادی', personnel_code: '503046' },
+    { full_name: 'مرتضی خجسته نژاد', personnel_code: '599177' },
+    { full_name: 'علی اکبر خنامانی', personnel_code: '502035' },
+    { full_name: 'مهدی خواجه حسنی راکری', personnel_code: '504051' },
+    { full_name: 'علیرضا زاهدی', personnel_code: '501128' },
+    { full_name: 'علی سپهری', personnel_code: '501121' },
+    { full_name: 'صالح سعید', personnel_code: '504077' },
+    { full_name: 'حسن سعید', personnel_code: '591162' },
+    { full_name: 'کریم سعید', personnel_code: '591176' },
+    { full_name: 'احسان سعید', personnel_code: '591177' },
+    { full_name: 'یاسر سعید', personnel_code: '592111' },
+    { full_name: 'وحید سعید', personnel_code: '592112' },
+    { full_name: 'محمد سعید', personnel_code: '593102' },
+    { full_name: 'امین سعید', personnel_code: '597150' },
+    { full_name: 'علی سعید - محمد', personnel_code: '501119' },
+    { full_name: 'رضا سعید (حسن)', personnel_code: '591185' },
+    { full_name: 'محسن سعید (علی)', personnel_code: '592205' },
+    { full_name: 'مجتبی سعید (محمد)', personnel_code: '593134' },
+    { full_name: 'مجید سعید (مهدی)', personnel_code: '593202' },
+    { full_name: 'علی سعید اصغر', personnel_code: '504031' },
+    { full_name: 'مهدی سعید غلامعباس', personnel_code: '593206' },
+    { full_name: 'مهدی سعید محمد', personnel_code: '502042' },
+    { full_name: 'علیرضا سعید یدالله', personnel_code: '504037' },
+    { full_name: 'محسن سعید اصغر', personnel_code: '594109' },
+    { full_name: 'علیرضا سعید حسین', personnel_code: '501124' },
+    { full_name: 'مسعود سلمانی چهار فرسخی', personnel_code: '504065' },
+    { full_name: 'محمد علی شمس الدین سعید', personnel_code: '504029' },
+    { full_name: 'رئوف شمس الدین سعید', personnel_code: '504070' },
+    { full_name: 'مهران شمس الدین سعید', personnel_code: '595102' },
+    { full_name: 'رضا شور آبادی', personnel_code: '500148' },
+    { full_name: 'رضا شیخ زاده', personnel_code: '501116' },
+    { full_name: 'محمد حسین شیخ زاده', personnel_code: '504039' },
+    { full_name: 'مجید شیخ زاهدی', personnel_code: '591115' },
+    { full_name: 'محمدرضا صبوری', personnel_code: '505013' },
+    { full_name: 'مصطفی صدیقی', personnel_code: '502012' },
+    { full_name: 'صابر طیاری', personnel_code: '501143' },
+    { full_name: 'ابوالفضل عابدی فریزنی', personnel_code: '504067' },
+    { full_name: 'علی اصغر عسکری گچگین', personnel_code: '504066' },
+    { full_name: 'محمد حسین علیدادی', personnel_code: '599117' },
+    { full_name: 'علیرضا فرزانی', personnel_code: '502031' },
+    { full_name: 'حمزه فرهمند', personnel_code: '500101' },
+    { full_name: 'محمد مهدی قاسم پور', personnel_code: '504058' },
+    { full_name: 'مازیار قلندری', personnel_code: '597110' },
+    { full_name: 'محمد قهرمانی', personnel_code: '503072' },
+    { full_name: 'امین کاکویی', personnel_code: '593105' },
+    { full_name: 'حمیدرضا کاکویی', personnel_code: '593112' },
+    { full_name: 'رسول کاکوئی', personnel_code: '593103' },
+    { full_name: 'محسن کاکوئی', personnel_code: '593130' },
+    { full_name: 'سهیل کاکوئی نژاد', personnel_code: '504057' },
+    { full_name: 'محمد مهدی کاکوئی نژاد', personnel_code: '504064' },
+    { full_name: 'محسن کاکوئی نژاد', personnel_code: '591184' },
+    { full_name: 'مصطفی گلومکی', personnel_code: '594101' },
+    { full_name: 'علی اکبر گلومکی زاده', personnel_code: '502017' },
+    { full_name: 'محمد گلومکی زاده', personnel_code: '591154' },
+    { full_name: 'محمد گهرگزی', personnel_code: '591149' },
+    { full_name: 'منصور لشکری', personnel_code: '591179' },
+    { full_name: 'ایمان محمدحسین زاده', personnel_code: '597101' },
+    { full_name: 'محمدرضا مسجدی', personnel_code: '501147' },
+    { full_name: 'حسن مسجدی', personnel_code: '504011' },
+    { full_name: 'محمد معاذالهی', personnel_code: '597115' },
+    { full_name: 'مجید مکی', personnel_code: '591178' },
+    { full_name: 'حسن مومنی', personnel_code: '504036' },
+    { full_name: 'محمد مهدی مومنی', personnel_code: '504074' },
+    { full_name: 'مهدی میرحسینی پور', personnel_code: '504044' },
+    { full_name: 'میثم نادری پورخبیسی', personnel_code: '591102' },
+    { full_name: 'رضا نصیری پور', personnel_code: '591151' },
+    { full_name: 'محمدجابر نصیری پور', personnel_code: '598101' },
+    { full_name: 'سعید نصیری پور (محمد)', personnel_code: '597144' },
+    { full_name: 'سجاد نگارستانی', personnel_code: '503086' },
+    { full_name: 'رسول نگارستانی', personnel_code: '593134' },
+    { full_name: 'علی نگارستانی', personnel_code: '594110' },
+    { full_name: 'امین نگارستانی', personnel_code: '594112' },
+    { full_name: 'احمدرضا هوشمند', personnel_code: '502003' },
+    { full_name: 'محمد رسول یزدی', personnel_code: '501134' }
+  ];
+
   function toEnglishDigits(str) {
     if (!str) return '';
     return String(str).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 1776).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632);
@@ -460,6 +551,14 @@
     const { data, error } = await client.from('employees').select('*');
     if (error) { console.error(error); return; }
     allEmployeesData = data || [];
+
+    if (allEmployeesData.length === 0) {
+      const dbStatus = document.getElementById('dbStatusText');
+      if(dbStatus) dbStatus.innerText = "در حال ثبت پرسنل در دیتابیس...";
+      const { data: insertedData } = await client.from('employees').insert(initialEmployeesData).select();
+      if (insertedData) allEmployeesData = insertedData;
+      else allEmployeesData = initialEmployeesData;
+    }
     
     const select = document.getElementById('employeeSelect');
     if(select) {
