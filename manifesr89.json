@@ -1,0 +1,15 @@
+{
+  "name": "سیستم مدیریت مرخصی سیمرغ مزرعه ۲",
+  "short_name": "مرخصی سیمرغ ۲",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#047857",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
