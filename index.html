@@ -436,6 +436,17 @@
       return;
     }
     allEmployeesData = data || [];
+
+    // اگر پرسنلی وجود نداشت، چند نیروی نمونه به صورت خودکار اضافه کن تا جدول خالی نباشد
+    if (allEmployeesData.length === 0) {
+      const defaultEmps = [
+        { full_name: 'پرسنل شماره ۱', personnel_code: '101' },
+        { full_name: 'پرسنل شماره ۲', personnel_code: '102' }
+      ];
+      await client.from('employees').insert(defaultEmps);
+      const { data: newData } = await client.from('employees').select('*');
+      allEmployeesData = newData || [];
+    }
     
     const select = document.getElementById('employeeSelect');
     if(select) {
@@ -447,14 +458,10 @@
 
     const manageList = document.getElementById('employeesManageList');
     if(manageList) {
-      if (allEmployeesData.length > 0) {
-        manageList.innerHTML = allEmployeesData.map(e => {
-          const codeText = e.personnel_code ? `کد پرسنلی: ${e.personnel_code}` : '';
-          return `<div class="emp-item" data-name="${e.full_name} ${e.personnel_code || ''}"><div class="emp-info"><strong>${e.full_name}</strong><small style="color:var(--text-muted); display:block;">${codeText}</small></div><button class="btn-delete" onclick="deleteEmployee('${e.id}', '${e.full_name}')">حذف</button></div>`;
-        }).join('');
-      } else {
-        manageList.innerHTML = `<p style="text-align:center; color:var(--text-muted);">پرسنلی ثبت نشده است. از دکمه بالا برای افزودن استفاده کنید.</p>`;
-      }
+      manageList.innerHTML = allEmployeesData.map(e => {
+        const codeText = e.personnel_code ? `کد پرسنلی: ${e.personnel_code}` : '';
+        return `<div class="emp-item" data-name="${e.full_name} ${e.personnel_code || ''}"><div class="emp-info"><strong>${e.full_name}</strong><small style="color:var(--text-muted); display:block;">${codeText}</small></div><button class="btn-delete" onclick="deleteEmployee('${e.id}', '${e.full_name}')">حذف</button></div>`;
+      }).join('');
     }
 
     const dbStatus = document.getElementById('dbStatusText');
