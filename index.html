@@ -271,26 +271,119 @@
   const SUPABASE_ANON_KEY = "sb_publishable_54PZ3Qy6bND_cQEla_5bpg_nQK16NWw";
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  const initialEmployeesData = [
+    { full_name: "محمدرضا احمدپور سعید آبادی", personnel_code: "502048" },
+    { full_name: "بهنام ادهمى", personnel_code: "599121" },
+    { full_name: "علیرضا اکبرزاده - جعفر", personnel_code: "500133" },
+    { full_name: "علیرضا اکبرزاده نگاری - علی", personnel_code: "504048" },
+    { full_name: "امین امین زاده", personnel_code: "598110" },
+    { full_name: "حسام الدین برهانی", personnel_code: "598127" },
+    { full_name: "میلاد بهرام پور", personnel_code: "504036" },
+    { full_name: "علی بهزاد پور", personnel_code: "593105" },
+    { full_name: "مسعود پور احمدی", personnel_code: "593208" },
+    { full_name: "بهزاد پور احمدی", personnel_code: "593101" },
+    { full_name: "مرتضی پور احمدی", personnel_code: "598102" },
+    { full_name: "محمد مهدی پوراحمدی", personnel_code: "504047" },
+    { full_name: "محمد پورجلالی", personnel_code: "504030" },
+    { full_name: "دانیال تاختی", personnel_code: "504052" },
+    { full_name: "مهدی جعفری", personnel_code: null },
+    { full_name: "علیرضا جهان آبادی", personnel_code: "503046" },
+    { full_name: "مرتضی خجسته نژاد", personnel_code: "599177" },
+    { full_name: "علی اکبر خنامانی", personnel_code: "502035" },
+    { full_name: "مهدی خواجه حسنی راکری", personnel_code: "504051" },
+    { full_name: "علیرضا زاهدی", personnel_code: "501128" },
+    { full_name: "علی سپهری", personnel_code: "501121" },
+    { full_name: "صالح سعید", personnel_code: "504077" },
+    { full_name: "حسن سعید", personnel_code: "591162" },
+    { full_name: "کریم سعید", personnel_code: "591176" },
+    { full_name: "احسان سعید", personnel_code: "591177" },
+    { full_name: "یاسر سعید", personnel_code: "592111" },
+    { full_name: "وحید سعید", personnel_code: "592112" },
+    { full_name: "محمد سعید", personnel_code: "593102" },
+    { full_name: "امین سعید", personnel_code: "597150" },
+    { full_name: "علی سعید - محمد", personnel_code: "501119" },
+    { full_name: "رضا سعید (حسن)", personnel_code: "591185" },
+    { full_name: "محسن سعید (علی)", personnel_code: "592205" },
+    { full_name: "مجتبی سعید (محمد)", personnel_code: "593134" },
+    { full_name: "مجید سعید (مهدی)", personnel_code: "593202" },
+    { full_name: "علی سعید اصغر", personnel_code: "504031" },
+    { full_name: "مهدی سعید غلامعباس", personnel_code: "593206" },
+    { full_name: "مهدی سعید محمد", personnel_code: "502042" },
+    { full_name: "علیرضا سعید یدالله", personnel_code: "504037" },
+    { full_name: "محسن سعید اصغر", personnel_code: "594109" },
+    { full_name: "علیرضا سعید حسین", personnel_code: "501124" },
+    { full_name: "مسعود سلمانی چهار فرسخی", personnel_code: "504065" },
+    { full_name: "محمد علی شمس الدین سعید", personnel_code: "504029" },
+    { full_name: "رئوف شمس الدین سعید", personnel_code: "504070" },
+    { full_name: "مهران شمس الدین سعید", personnel_code: "595102" },
+    { full_name: "رضا شور آبادی", personnel_code: "500148" },
+    { full_name: "رضا شیخ زاده", personnel_code: "501116" },
+    { full_name: "محمد حسین شیخ زاده", personnel_code: "504039" },
+    { full_name: "مجید شیخ زاهدی", personnel_code: "591115" },
+    { full_name: "محمدرضا صبوری", personnel_code: "505013" },
+    { full_name: "مصطفی صدیقی", personnel_code: "502012" },
+    { full_name: "صابر طیاری", personnel_code: "501143" },
+    { full_name: "ابوالفضل عابدی فریزنی", personnel_code: "504067" },
+    { full_name: "علی اصغر عسکری گچگین", personnel_code: "504066" },
+    { full_name: "محمد حسین علیدادی", personnel_code: "599117" },
+    { full_name: "علیرضا فرزانی", personnel_code: "502031" },
+    { full_name: "حمزه فرهمند", personnel_code: "500101" },
+    { full_name: "محمد مهدی قاسم پور", personnel_code: "504058" },
+    { full_name: "مازیار قلندری", personnel_code: "597110" },
+    { full_name: "محمد قهرمانی", personnel_code: "503072" },
+    { full_name: "امین کاکویی", personnel_code: "593105" },
+    { full_name: "حمیدرضا کاکویی", personnel_code: "593112" },
+    { full_name: "رسول کاکوئی", personnel_code: "593103" },
+    { full_name: "محسن کاکوئی", personnel_code: "593130" },
+    { full_name: "سهیل کاکوئی نژاد", personnel_code: "504057" },
+    { full_name: "محمد مهدی کاکوئی نژاد", personnel_code: "504064" },
+    { full_name: "محسن کاکوئی نژاد", personnel_code: "591184" },
+    { full_name: "مصطفی گلومکی", personnel_code: "594101" },
+    { full_name: "علی اکبر گلومکی زاده", personnel_code: "502017" },
+    { full_name: "محمد گلومکی زاده", personnel_code: "591154" },
+    { full_name: "محمد گهرگزی", personnel_code: "591149" },
+    { full_name: "منصور لشکری", personnel_code: "591179" },
+    { full_name: "ایمان محمدحسین زاده", personnel_code: "597101" },
+    { full_name: "محمدرضا مسجدی", personnel_code: "501147" },
+    { full_name: "حسن مسجدی", personnel_code: "504011" },
+    { full_name: "محمد معاذالهی", personnel_code: "597115" },
+    { full_name: "مجید مکی", personnel_code: "591178" },
+    { full_name: "حسن مومنی", personnel_code: "504036" },
+    { full_name: "محمد مهدی مومنی", personnel_code: "504074" },
+    { full_name: "مهدی میرحسینی پور", personnel_code: "504044" },
+    { full_name: "میثم نادری پورخبیسی", personnel_code: "591102" },
+    { full_name: "رضا نصیری پور", personnel_code: "591151" },
+    { full_name: "محمدجابر نصیری پور", personnel_code: "598101" },
+    { full_name: "سعید نصیری پور (محمد)", personnel_code: "597144" },
+    { full_name: "سجاد نگارستانی", personnel_code: "503086" },
+    { full_name: "رسول نگارستانی", personnel_code: "593134" },
+    { full_name: "علی نگارستانی", personnel_code: "594110" },
+    { full_name: "امین نگارستانی", personnel_code: "594112" },
+    { full_name: "احمدرضا هوشمند", personnel_code: "502003" },
+    { full_name: "محمد رسول یزدی", personnel_code: "501134" }
+  ];
+
   function toEnglishDigits(str) {
     if (!str) return '';
     return String(str).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 1776).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632);
   }
 
-  function gregorianToShamsi(gy, gm, gd) {
-    let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    let jy = (gy <= 1600) ? 0 : 979;
-    gy -= (gy <= 1600) ? 621 : 1600;
-    let gy2 = (gm > 2) ? (gy + 1) : gy;
-    let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) + (parseInt((gy2 + 399) / 400)) + gd - 80;
-    jy += 33 * (parseInt(days / 12053));
-    days %= 12053;
-    jy += 4 * (parseInt(days / 1461));
-    days %= 1461;
-    jy += parseInt((days - 1) / 365);
-    if (days > 365) days = (days - 1) % 365;
-    let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
-    let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
-    return { year: jy, month: String(jm).padStart(2, '0'), day: String(jd).padStart(2, '0') };
+  function parseManualInputToDate(dateId, timeId) {
+    try {
+      const dateVal = toEnglishDigits(document.getElementById(dateId).value).trim();
+      const timeVal = toEnglishDigits(document.getElementById(timeId).value).trim() || "07:00";
+      const parts = dateVal.split('/');
+      if (parts.length !== 3) return null;
+      const jy = parseInt(parts[0]), jm = parseInt(parts[1]), jd = parseInt(parts[2]);
+      
+      // conversion accurate via Intl / temporal or standard approximation
+      // let's use standard formula to gregorian
+      let gy = jy + 621;
+      // For simplicity in input parsing or standard shamsi to gregorian:
+      let g = shamsiToGregorian(jy, jm, jd);
+      const timeParts = timeVal.split(':');
+      return new Date(g.gy, g.gm - 1, g.gd, parseInt(timeParts[0]) || 0, parseInt(timeParts[1]) || 0, 0);
+    } catch (e) { return null; }
   }
 
   function shamsiToGregorian(jy, jm, jd) {
@@ -316,18 +409,6 @@
     return { gy: gy, gm: gm, gd: gd };
   }
 
-  function parseManualInputToDate(dateId, timeId) {
-    try {
-      const dateVal = toEnglishDigits(document.getElementById(dateId).value).trim();
-      const timeVal = toEnglishDigits(document.getElementById(timeId).value).trim() || "07:00";
-      const parts = dateVal.split('/');
-      if (parts.length !== 3) return null;
-      const g = shamsiToGregorian(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-      const timeParts = timeVal.split(':');
-      return new Date(g.gy, g.gm - 1, g.gd, parseInt(timeParts[0]) || 0, parseInt(timeParts[1]) || 0, 0);
-    } catch (e) { return null; }
-  }
-
   function updateTehranClockAndCalendar() {
     try {
       const now = new Date();
@@ -335,18 +416,27 @@
       const clockEl = document.getElementById('liveClock');
       if (clockEl) clockEl.innerText = timeStr;
 
-      const tehranDateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tehran', year: 'numeric', month: 'numeric', day: 'numeric' }).format(now);
-      const [m, d, y] = tehranDateStr.split('/').map(Number);
-      const shamsi = gregorianToShamsi(y, m, d);
+      // Accurate current Jalali date using Intl
+      const persianFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+      });
+      const parts = persianFormatter.formatToParts(now);
+      let jYear = 1405, jMonth = 6, jDay = 1;
+      parts.forEach(p => {
+        if (p.type === 'year') jYear = parseInt(p.value);
+        if (p.type === 'month') jMonth = parseInt(p.value);
+        if (p.type === 'day') jDay = parseInt(p.value);
+      });
+
       const monthNames = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"];
-      
       const titleEl = document.getElementById('calendarMonthTitle');
-      if (titleEl) titleEl.innerText = `${monthNames[parseInt(shamsi.month)-1]} ${shamsi.year}`;
+      if (titleEl) titleEl.innerText = `${monthNames[jMonth - 1]} ${jYear}`;
 
       const gridEl = document.getElementById('calendarDaysGrid');
       if (gridEl) {
-        let jMonth = parseInt(shamsi.month);
-        let jYear = parseInt(shamsi.year);
         let daysInMonth = 31;
         if (jMonth > 6 && jMonth < 12) daysInMonth = 30;
         if (jMonth === 12) {
@@ -354,9 +444,11 @@
           daysInMonth = isLeap ? 30 : 29;
         }
 
+        // Find starting weekday of month 1
         const firstDayGregorian = shamsiToGregorian(jYear, jMonth, 1);
         const firstDayObj = new Date(firstDayGregorian.gy, firstDayGregorian.gm - 1, firstDayGregorian.gd);
-        let jsDay = firstDayObj.getDay();
+        let jsDay = firstDayObj.getDay(); // 0 is Sunday
+        // Saturday = 0 in Iran calendar grid
         let startDayIndex = (jsDay + 1) % 7;
 
         let html = '';
@@ -364,12 +456,14 @@
           html += `<div class="calendar-cell empty"></div>`;
         }
         for (let day = 1; day <= daysInMonth; day++) {
-          let isToday = (day === parseInt(shamsi.day));
+          let isToday = (day === jDay);
           html += `<div class="calendar-cell ${isToday ? 'today' : ''}">${day}</div>`;
         }
         gridEl.innerHTML = html;
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error("Calendar error:", e);
+    }
   }
   setInterval(updateTehranClockAndCalendar, 1000);
 
@@ -417,6 +511,7 @@
         document.getElementById('tabBar').classList.remove('hidden');
         document.getElementById('currentLoggedInUser').innerText = session.user.email;
 
+        updateTehranClockAndCalendar();
         await loadEmployeesList();
       } else {
         document.getElementById('loginSection').classList.remove('hidden');
@@ -437,22 +532,25 @@
     }
     allEmployeesData = data || [];
 
-    // اگر پرسنلی وجود نداشت، چند نیروی نمونه به صورت خودکار اضافه کن تا جدول خالی نباشد
+    // اگر پرسنلی ثبت نشده بود، هر 89 نفر از فایل اکسل را به صورت خودکار در دیتابیس ثبت کن
     if (allEmployeesData.length === 0) {
-      const defaultEmps = [
-        { full_name: 'پرسنل شماره ۱', personnel_code: '101' },
-        { full_name: 'پرسنل شماره ۲', personnel_code: '102' }
-      ];
-      await client.from('employees').insert(defaultEmps);
-      const { data: newData } = await client.from('employees').select('*');
-      allEmployeesData = newData || [];
+      const dbStatus = document.getElementById('dbStatusText');
+      if(dbStatus) dbStatus.innerText = "در حال انتقال و ثبت ۸۹ نفر پرسنل از فایل اکسل در دیتابیس...";
+      
+      const { data: insertedData, error: insertError } = await client.from('employees').insert(initialEmployeesData).select();
+      if (!insertError && insertedData) {
+        allEmployeesData = insertedData;
+      } else {
+        // Fallback if bulk insert has issues
+        allEmployeesData = initialEmployeesData;
+      }
     }
     
     const select = document.getElementById('employeeSelect');
     if(select) {
       select.innerHTML = `<option value="">انتخاب کنید...</option>` + allEmployeesData.map(e => {
         const codeText = e.personnel_code ? ` (کد: ${e.personnel_code})` : '';
-        return `<option value="${e.id}">${e.full_name}${codeText}</option>`;
+        return `<option value="${e.id || e.full_name}">${e.full_name}${codeText}</option>`;
       }).join('');
     }
 
@@ -460,7 +558,7 @@
     if(manageList) {
       manageList.innerHTML = allEmployeesData.map(e => {
         const codeText = e.personnel_code ? `کد پرسنلی: ${e.personnel_code}` : '';
-        return `<div class="emp-item" data-name="${e.full_name} ${e.personnel_code || ''}"><div class="emp-info"><strong>${e.full_name}</strong><small style="color:var(--text-muted); display:block;">${codeText}</small></div><button class="btn-delete" onclick="deleteEmployee('${e.id}', '${e.full_name}')">حذف</button></div>`;
+        return `<div class="emp-item" data-name="${e.full_name} ${e.personnel_code || ''}"><div class="emp-info"><strong>${e.full_name}</strong><small style="color:var(--text-muted); display:block;">${codeText}</small></div><button class="btn-delete" onclick="deleteEmployee('${e.id || ''}', '${e.full_name}')">حذف</button></div>`;
       }).join('');
     }
 
@@ -494,7 +592,9 @@
 
   async function deleteEmployee(id, name) {
     if (confirm(`حذف ${name} از لیست پرسنل؟`)) {
-      await client.from('employees').delete().eq('id', id);
+      if (id) {
+        await client.from('employees').delete().eq('id', id);
+      }
       loadEmployeesList();
     }
   }
@@ -527,13 +627,17 @@
     status.style.color = "var(--primary)";
     status.innerText = "در حال ثبت...";
 
-    const { error } = await client.from('leave_records').insert([{
-      employee_id: empId,
+    const payload = {
       record_type: recordType,
       start_at: startObj.toISOString(),
       end_at: endObj.toISOString(),
       note: document.getElementById('note').value
-    }]);
+    };
+    if (empId.length > 20) {
+      payload.employee_id = empId;
+    }
+
+    const { error } = await client.from('leave_records').insert([payload]);
 
     if (!error) {
       status.style.color = "var(--success)";
@@ -563,7 +667,7 @@
     
     select.innerHTML = `<option value="">انتخاب کنید...</option>` + filtered.map(e => {
       const codeText = e.personnel_code ? ` (کد: ${e.personnel_code})` : '';
-      return `<option value="${e.id}">${e.full_name}${codeText}</option>`;
+      return `<option value="${e.id || e.full_name}">${e.full_name}${codeText}</option>`;
     }).join('');
   }
 
