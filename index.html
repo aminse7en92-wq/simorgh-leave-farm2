@@ -230,12 +230,6 @@
       </div>
     </div>
 
-    <!-- تب وضعیت ماهانه -->
-    <div id="tabMonthlyStatus" class="tab-content hidden">
-      <h2>📅 وضعیت ماهانه</h2>
-      <div id="monthlyStatusList" style="text-align: center; color: var(--text-muted); padding: 20px;">به زودی...</div>
-    </div>
-
     <!-- تب سوابق -->
     <div id="tabRecords" class="tab-content hidden">
       <h2>📋 سوابق ثبت‌شده</h2>
@@ -274,7 +268,6 @@
 <div id="tabBar" class="tab-bar hidden">
   <button class="tab-item active" onclick="switchTab('tabDashboard', this)"><span>🏠</span>داشبورد</button>
   <button class="tab-item" onclick="switchTab('tabLeave', this)"><span>📝</span>ثبت</button>
-  <button class="tab-item" onclick="switchTab('tabMonthlyStatus', this)"><span>📅</span>وضعیت</button>
   <button class="tab-item" onclick="switchTab('tabRecords', this)"><span>📋</span>سوابق</button>
   <button class="tab-item" onclick="switchTab('tabEmployees', this)"><span>👥</span>پرسنل</button>
   <button class="tab-item" onclick="switchTab('tabRemaining', this)"><span>📊</span>گزارش</button>
@@ -571,7 +564,6 @@
     const listEl = document.getElementById('remainingList');
     if (!listEl) return;
 
-    // محاسبات سهمیه (۱۹۰ ساعت و ۴۰ دقیقه معادل ۲۶ روز کاری ۷ ساعت و ۲۰ دقیقه‌ای)
     const totalAllowedMinutes = 26 * (7 * 60 + 20);
 
     let html = allEmployeesData.map(emp => {
