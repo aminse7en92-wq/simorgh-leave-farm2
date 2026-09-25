@@ -87,8 +87,11 @@
     button:disabled { background: #94a3b8; cursor: not-allowed; }
     
     .btn-add-emp { background: var(--success); }
-    .btn-delete { width: auto; padding: 6px 12px; font-size: 0.8rem; margin-top: 0; border-radius: 8px; background: #fee2e2; color: var(--danger); }
+    .btn-delete, .btn-edit, .btn-close { width: auto; padding: 6px 12px; font-size: 0.8rem; margin-top: 0; border-radius: 8px; }
+    .btn-delete { background: #fee2e2; color: var(--danger); }
     .btn-delete:hover { background: var(--danger); color: white; }
+    .btn-edit { background: #fef3c7; color: var(--warning); margin-left: 5px; }
+    .btn-edit:hover { background: var(--warning); color: white; }
     
     .hidden { display: none !important; }
     .status { margin-top: 12px; font-size: 0.95rem; text-align: center; font-weight: bold; }
@@ -99,6 +102,7 @@
     }
     .emp-item, .record-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
     .emp-info, .record-info { flex: 1; }
+    .record-actions { display: flex; gap: 5px; }
 
     .record-type-badge {
       display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: white; margin-bottom: 5px;
@@ -118,6 +122,10 @@
     .calendar-cell { font-size: 0.85rem; padding: 10px 0; border-radius: 6px; background: #f8fafc; color: var(--text-main); font-weight: 500; }
     .calendar-cell.empty { background: transparent; }
     .calendar-cell.today { background: var(--primary); color: white; font-weight: bold; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
+
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+    .modal-content { background: var(--card-bg); padding: 25px; border-radius: 16px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; 
@@ -265,6 +273,50 @@
   </div>
 </div>
 
+<!-- مودال ویرایش رکورد مرخصی -->
+<div id="editRecordModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 style="margin:0;">✏️ ویرایش مرخصی</h3>
+      <button class="btn-close" onclick="closeEditRecordModal()">بستن ✕</button>
+    </div>
+    <form id="editRecordForm">
+      <input type="hidden" id="editRecordId">
+      <div class="form-group">
+        <label>نوع رکورد:</label>
+        <select id="editRecordType" required>
+          <option value="daily_leave">مرخصی روزانه</option>
+          <option value="hourly_leave">مرخصی ساعتی</option>
+          <option value="sick_leave">استعلاجی</option>
+          <option value="official_holiday">تعطیل رسمی</option>
+          <option value="absence">غیبت</option>
+          <option value="other">سایر</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>تاریخ شروع:</label>
+        <div class="date-time-group">
+          <input type="text" id="editStartDate" required placeholder="1405/06/19" autocomplete="off" inputmode="numeric" maxlength="10">
+          <input type="time" id="editStartTime" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>تاریخ پایان:</label>
+        <div class="date-time-group">
+          <input type="text" id="editEndDate" placeholder="1405/06/19" autocomplete="off" inputmode="numeric" maxlength="10">
+          <input type="time" id="editEndTime" required>
+        </div>
+      </div>
+      
+      <div class="form-group"><label>💬 توضیحات:</label><textarea id="editNote" rows="2"></textarea></div>
+      <button type="submit">ذخیره تغییرات</button>
+    </form>
+    <div id="editRecordStatus" class="status"></div>
+  </div>
+</div>
+
 <div id="tabBar" class="tab-bar hidden">
   <button class="tab-item active" onclick="switchTab('tabDashboard', this)"><span>🏠</span>داشبورد</button>
   <button class="tab-item" onclick="switchTab('tabLeave', this)"><span>📝</span>ثبت</button>
@@ -292,7 +344,7 @@
     return String(str).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 1776).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 1632);
   }
 
-  ['startDateManual', 'endDateManual'].forEach(id => {
+  ['startDateManual', 'endDateManual', 'editStartDate', 'editEndDate'].forEach(id => {
     const el = document.getElementById(id);
     if(el) {
       el.addEventListener('input', function(e) {
@@ -354,14 +406,29 @@
     return { gy: gy, gm: gm, gd: gd };
   }
 
-  function parseManualInputToDate(dateId, timeId) {
+  function gregorianToShamsi(gy, gm, gd) {
+    let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    let jy = (gy <= 1600) ? 0 : 979;
+    gy -= (gy <= 1600) ? 621 : 1600;
+    let gy2 = (gm > 2) ? (gy + 1) : gy;
+    let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) + (parseInt((gy2 + 399) / 400)) + gd - 80;
+    jy += 33 * (parseInt(days / 12053));
+    days %= 12053;
+    jy += 4 * (parseInt(days / 1461));
+    days %= 1461;
+    jy += parseInt((days - 1) / 365);
+    if (days > 365) days = (days - 1) % 365;
+    let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+    let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+    return { year: jy, month: String(jm).padStart(2, '0'), day: String(jd).padStart(2, '0') };
+  }
+
+  function parseInputToDate(dateVal, timeVal) {
     try {
-      const dateVal = toEnglishDigits(document.getElementById(dateId).value).trim();
-      const timeVal = toEnglishDigits(document.getElementById(timeId).value).trim() || "07:00";
-      const parts = dateVal.split('/');
+      const parts = toEnglishDigits(dateVal).trim().split('/');
       if (parts.length !== 3) return null;
       const g = shamsiToGregorian(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-      const timeParts = timeVal.split(':');
+      const timeParts = toEnglishDigits(timeVal).trim().split(':');
       return new Date(g.gy, g.gm - 1, g.gd, parseInt(timeParts[0]) || 0, parseInt(timeParts[1]) || 0, 0);
     } catch (e) { return null; }
   }
@@ -521,8 +588,15 @@
       const empName = r.employees ? r.employees.full_name : 'نامشخص';
       const typeLabel = typeLabels[r.record_type] || r.record_type;
       const badgeClass = `badge-${r.record_type}`;
-      const startDate = new Date(r.start_at).toLocaleString('fa-IR');
-      const endDate = new Date(r.end_at).toLocaleString('fa-IR');
+      
+      const sDateObj = new Date(r.start_at);
+      const eDateObj = new Date(r.end_at);
+      const sShamsi = gregorianToShamsi(sDateObj.getFullYear(), sDateObj.getMonth()+1, sDateObj.getDate());
+      const eShamsi = gregorianToShamsi(eDateObj.getFullYear(), eDateObj.getMonth()+1, eDateObj.getDate());
+      
+      const sTime = sDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      const eTime = eDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
       const noteText = r.note ? `<div>💬 توضیحات: ${r.note}</div>` : '';
 
       return `<div class="record-item" data-name="${empName}">
@@ -530,11 +604,15 @@
           <span class="record-type-badge ${badgeClass}">${typeLabel}</span>
           <strong>${empName}</strong>
           <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
-            از: ${startDate} <br> تا: ${endDate}
+            از: ${sTime} , ${sShamsi.year}/${sShamsi.month}/${sShamsi.day} <br> 
+            تا: ${eTime} , ${eShamsi.year}/${eShamsi.month}/${eShamsi.day}
           </div>
           ${noteText}
         </div>
-        <button class="btn-delete" onclick="deleteRecord('${r.id}')">حذف</button>
+        <div class="record-actions">
+          <button class="btn-edit" onclick="openEditRecordModal('${r.id}', '${r.record_type}', '${r.start_at}', '${r.end_at}', ${JSON.stringify(r.note || '')})">ویرایش</button>
+          <button class="btn-delete" onclick="deleteRecord('${r.id}')">حذف</button>
+        </div>
       </div>`;
     }).join('');
   }
@@ -559,6 +637,68 @@
       }
     }
   }
+
+  function openEditRecordModal(id, type, startAt, endAt, note) {
+    document.getElementById('editRecordId').value = id;
+    document.getElementById('editRecordType').value = type;
+    
+    const sObj = new Date(startAt);
+    const eObj = new Date(endAt);
+    const sShamsi = gregorianToShamsi(sObj.getFullYear(), sObj.getMonth()+1, sObj.getDate());
+    const eShamsi = gregorianToShamsi(eObj.getFullYear(), eObj.getMonth()+1, eObj.getDate());
+    
+    document.getElementById('editStartDate').value = `${sShamsi.year}/${sShamsi.month}/${sShamsi.day}`;
+    document.getElementById('editStartTime').value = sObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('editEndDate').value = `${eShamsi.year}/${eShamsi.month}/${eShamsi.day}`;
+    document.getElementById('editEndTime').value = eObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('editNote').value = note;
+    
+    document.getElementById('editRecordModal').classList.remove('hidden');
+  }
+
+  function closeEditRecordModal() {
+    document.getElementById('editRecordModal').classList.add('hidden');
+  }
+
+  document.getElementById('editRecordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const status = document.getElementById('editRecordStatus');
+    status.style.color = "var(--primary)";
+    status.innerText = "در حال بروزرسانی...";
+
+    const startObj = parseInputToDate(document.getElementById('editStartDate').value, document.getElementById('editStartTime').value);
+    const endObj = parseInputToDate(document.getElementById('editEndDate').value, document.getElementById('editEndTime').value);
+
+    if (!startObj || !endObj) {
+      status.style.color = "var(--danger)";
+      status.innerText = "فرمت تاریخ یا ساعت اشتباه است.";
+      return;
+    }
+
+    const recordId = document.getElementById('editRecordId').value;
+    const payload = {
+      record_type: document.getElementById('editRecordType').value,
+      start_at: startObj.toISOString(),
+      end_at: endObj.toISOString(),
+      note: document.getElementById('editNote').value
+    };
+
+    const { error } = await client.from('leave_records').update(payload).eq('id', recordId);
+
+    if (!error) {
+      status.style.color = "var(--success)";
+      status.innerText = "تغییرات با موفقیت ذخیره شد!";
+      setTimeout(() => {
+        closeEditRecordModal();
+        status.innerText = "";
+        loadRecords();
+        loadRemainingLeave();
+      }, 500);
+    } else {
+      status.style.color = "var(--danger)";
+      status.innerText = "خطا در ویرایش: " + error.message;
+    }
+  });
 
   async function loadRemainingLeave() {
     const listEl = document.getElementById('remainingList');
@@ -627,8 +767,8 @@
     startTimeInput.disabled = false;
     endTimeInput.disabled = false;
 
-    const startObj = parseManualInputToDate('startDateManual', 'startTimeManual');
-    const endObj = parseManualInputToDate('endDateManual', 'endTimeManual');
+    const startObj = parseInputToDate(document.getElementById('startDateManual').value, document.getElementById('startTimeManual').value);
+    const endObj = parseInputToDate(document.getElementById('endDateManual').value, document.getElementById('endTimeManual').value);
 
     if (wasDisabled) {
       startTimeInput.disabled = true;
