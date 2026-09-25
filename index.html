@@ -93,12 +93,22 @@
     .hidden { display: none !important; }
     .status { margin-top: 12px; font-size: 0.95rem; text-align: center; font-weight: bold; }
     
-    .card, .emp-item { 
+    .card, .emp-item, .record-item { 
       background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; 
       border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-    .emp-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
-    .emp-info { flex: 1; }
+    .emp-item, .record-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
+    .emp-info, .record-info { flex: 1; }
+
+    .record-type-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: white; margin-bottom: 5px;
+    }
+    .badge-daily_leave { background: var(--primary); }
+    .badge-hourly_leave { background: var(--success); }
+    .badge-sick_leave { background: var(--warning); }
+    .badge-official_holiday { background: var(--black-accent); }
+    .badge-absence { background: var(--danger); }
+    .badge-other { background: #8b5cf6; }
 
     /* تقویم شمسی زیبا */
     .calendar-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -229,7 +239,8 @@
     <!-- تب سوابق -->
     <div id="tabRecords" class="tab-content hidden">
       <h2>📋 سوابق ثبت‌شده</h2>
-      <div id="recordsList" style="text-align: center; color: var(--text-muted); padding: 20px;">رکوردی ثبت نشده است.</div>
+      <input type="text" class="search-input" placeholder="جستجوی نام پرسنل..." oninput="filterRecords(this.value)">
+      <div id="recordsList">در حال دریافت...</div>
     </div>
 
     <!-- تب پرسنل -->
@@ -252,8 +263,9 @@
 
     <!-- تب گزارش -->
     <div id="tabRemaining" class="tab-content hidden">
-      <h2>📊 گزارش باقی‌مانده</h2>
-      <div style="text-align: center; color: var(--text-muted); padding: 20px;">گزارش آماده است.</div>
+      <h2>📊 گزارش باقی‌مانده مرخصی</h2>
+      <input type="text" class="search-input" placeholder="جستجوی نام شخص..." oninput="filterRemaining(this.value)">
+      <div id="remainingList">در حال دریافت...</div>
     </div>
 
   </div>
@@ -272,6 +284,15 @@
   const SUPABASE_URL = "https://fdsfpahtonlnnlrkoakx.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_54PZ3Qy6bND_cQEla_5bpg_nQK16NWw";
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const typeLabels = {
+    'daily_leave': 'مرخصی روزانه',
+    'hourly_leave': 'مرخصی ساعتی',
+    'sick_leave': 'استعلاجی',
+    'official_holiday': 'تعطیل رسمی',
+    'absence': 'غیبت',
+    'other': 'سایر'
+  };
 
   function toEnglishDigits(str) {
     if (!str) return '';
@@ -429,6 +450,7 @@
   }
 
   let allEmployeesData = [];
+  let allRecordsData = [];
 
   async function init() {
     try {
@@ -445,6 +467,8 @@
         updateTehranClockAndCalendar();
         handleRecordTypeChange();
         await loadEmployeesList();
+        await loadRecords();
+        await loadRemainingLeave();
       } else {
         document.getElementById('loginSection').classList.remove('hidden');
         document.getElementById('appSection').classList.add('hidden');
@@ -483,6 +507,109 @@
 
     const dbStatus = document.getElementById('dbStatusText');
     if(dbStatus) dbStatus.innerText = `تعداد کل پرسنل ثبت‌شده در دیتابیس مزرعه ۲: ${allEmployeesData.length} نفر`;
+  }
+
+  async function loadRecords() {
+    const { data, error } = await client.from('leave_records').select('id, employee_id, record_type, start_at, end_at, note, employees(full_name, personnel_code)');
+    if (error) { console.error(error); return; }
+    allRecordsData = data || [];
+    renderRecordsList(allRecordsData);
+  }
+
+  function renderRecordsList(records) {
+    const listEl = document.getElementById('recordsList');
+    if (!listEl) return;
+    if (records.length === 0) {
+      listEl.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">رکوردی ثبت نشده است.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = records.map(r => {
+      const empName = r.employees ? r.employees.full_name : 'نامشخص';
+      const typeLabel = typeLabels[r.record_type] || r.record_type;
+      const badgeClass = `badge-${r.record_type}`;
+      const startDate = new Date(r.start_at).toLocaleString('fa-IR');
+      const endDate = new Date(r.end_at).toLocaleString('fa-IR');
+      const noteText = r.note ? `<div>💬 توضیحات: ${r.note}</div>` : '';
+
+      return `<div class="record-item" data-name="${empName}">
+        <div class="record-info">
+          <span class="record-type-badge ${badgeClass}">${typeLabel}</span>
+          <strong>${empName}</strong>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+            از: ${startDate} <br> تا: ${endDate}
+          </div>
+          ${noteText}
+        </div>
+        <button class="btn-delete" onclick="deleteRecord('${r.id}')">حذف</button>
+      </div>`;
+    }).join('');
+  }
+
+  function filterRecords(query) {
+    const filter = query.trim().toLowerCase();
+    const filtered = allRecordsData.filter(r => {
+      const name = r.employees ? r.employees.full_name.toLowerCase() : '';
+      return name.includes(filter);
+    });
+    renderRecordsList(filtered);
+  }
+
+  async function deleteRecord(id) {
+    if (confirm('آیا از حذف این رکورد مرخصی اطمینان دارید؟')) {
+      const { error } = await client.from('leave_records').delete().eq('id', id);
+      if (!error) {
+        loadRecords();
+        loadRemainingLeave();
+      } else {
+        alert('خطا در حذف: ' + error.message);
+      }
+    }
+  }
+
+  async function loadRemainingLeave() {
+    const listEl = document.getElementById('remainingList');
+    if (!listEl) return;
+
+    // محاسبات سهمیه (۱۹۰ ساعت و ۴۰ دقیقه معادل ۲۶ روز کاری ۷ ساعت و ۲۰ دقیقه‌ای)
+    const totalAllowedMinutes = 26 * (7 * 60 + 20);
+
+    let html = allEmployeesData.map(emp => {
+      const empRecords = allRecordsData.filter(r => r.employee_id === emp.id);
+      let usedMinutes = 0;
+      empRecords.forEach(r => {
+        if (r.record_type === 'daily_leave' || r.record_type === 'sick_leave' || r.record_type === 'official_holiday') {
+          usedMinutes += (7 * 60 + 20);
+        } else if (r.record_type === 'hourly_leave' || r.record_type === 'other') {
+          const diff = Math.max(0, Math.floor((new Date(r.end_at) - new Date(r.start_at)) / 60000));
+          usedMinutes += diff;
+        }
+      });
+
+      const remainingMinutes = Math.max(0, totalAllowedMinutes - usedMinutes);
+      const remDays = Math.floor(remainingMinutes / (7 * 60 + 20));
+      const remHours = Math.floor((remainingMinutes % (7 * 60 + 20)) / 60);
+
+      return `<div class="emp-item" data-name="${emp.full_name}">
+        <div class="emp-info">
+          <strong>${emp.full_name}</strong>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+            استفاده شده: ${Math.floor(usedMinutes/60)} ساعت | مانده: ${remDays} روز و ${remHours} ساعت
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    listEl.innerHTML = html || `<p style="text-align:center; color:var(--text-muted);">پرسنلی یافت نشد.</p>`;
+  }
+
+  function filterRemaining(query) {
+    const filter = query.trim().toLowerCase();
+    const items = document.querySelectorAll('#remainingList .emp-item');
+    items.forEach(item => {
+      const name = item.getAttribute('data-name').toLowerCase();
+      item.style.display = name.includes(filter) ? "" : "none";
+    });
   }
 
   document.getElementById('leaveForm').addEventListener('submit', async (e) => {
@@ -540,6 +667,8 @@
       status.innerText = "مرخصی با موفقیت ثبت شد!";
       document.getElementById('leaveForm').reset();
       handleRecordTypeChange();
+      loadRecords();
+      loadRemainingLeave();
     } else {
       status.style.color = "var(--danger)";
       status.innerText = "خطا در ثبت: " + error.message;
@@ -551,6 +680,9 @@
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
     if (btn) btn.classList.add('active');
+    
+    if (tabId === 'tabRecords') loadRecords();
+    if (tabId === 'tabRemaining') loadRemainingLeave();
   }
 
   function toggleAddEmployeeForm() {
