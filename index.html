@@ -651,7 +651,8 @@
     document.getElementById('editStartTime').value = sObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('editEndDate').value = `${eShamsi.year}/${eShamsi.month}/${eShamsi.day}`;
     document.getElementById('editEndTime').value = eObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('editNote').value = note;
+    document.getElementById('editNote').value = note || '';
+    document.getElementById('editRecordStatus').innerText = '';
     
     document.getElementById('editRecordModal').classList.remove('hidden');
   }
@@ -693,7 +694,7 @@
         status.innerText = "";
         loadRecords();
         loadRemainingLeave();
-      }, 500);
+      }, 600);
     } else {
       status.style.color = "var(--danger)";
       status.innerText = "خطا در ویرایش: " + error.message;
